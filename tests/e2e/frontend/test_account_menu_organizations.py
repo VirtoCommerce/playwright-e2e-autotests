@@ -253,3 +253,41 @@ def test_account_menu_organizations_all_locked_all_disabled(
     with allure.step("Verify account-level pages remain accessible (AC-6)"):
         home_page.top_header.account_menu.dashboard_link.click()
         expect(page).to_have_url(re.compile(r"/account/dashboard"))
+
+
+@pytest.mark.e2e
+@pytest.mark.skip
+@allure.feature("Account / Organizations menu (E2E)")
+@allure.title("VCST-5317: reopening the switcher picks up a lock applied while it was closed")
+def test_account_menu_organizations_reopen_picks_up_new_lock(
+    global_settings: GlobalSettings,
+    page: Page,
+    dataset: dict[str, list[dict[str, Any]]],
+    lock_membership: Callable[..., None],
+) -> None:
+    """useUserOrganizations caches the organizations list for the whole session — without a
+    refetch on reopen, a lock applied while the menu was closed would leave a stale, clickable
+    row until the page is reloaded."""
+    user_id = _employee_1_user_id(dataset)
+
+    _sign_in(global_settings, page)
+
+    home_page = HomePage(global_settings=global_settings, page=page)
+
+    with allure.step(f"Open account menu and verify {_TARGET_ORGANIZATION_NAME} is selectable"):
+        _dismiss_password_expiry_modal(page)
+        home_page.top_header.account_button.root.click()
+        expect(home_page.top_header.account_menu.root).to_be_visible()
+        expect(home_page.top_header.account_menu.find_organization_option(_TARGET_ORGANIZATION_NAME)).to_be_enabled()
+
+    with allure.step("Close the menu"):
+        home_page.top_header.account_button.root.click()
+        expect(home_page.top_header.account_menu.root).not_to_be_visible()
+
+    with allure.step(f"Lock {_USERNAME} in {_TARGET_ORGANIZATION_NAME} while the menu is closed"):
+        lock_membership(user_id=user_id, organization_id=_TARGET_ORGANIZATION_ID)
+
+    with allure.step("Reopen the menu without reloading the page — the lock must show up immediately"):
+        home_page.top_header.account_button.root.click()
+        expect(home_page.top_header.account_menu.root).to_be_visible()
+        expect(home_page.top_header.account_menu.find_organization_option(_TARGET_ORGANIZATION_NAME)).to_be_disabled()
