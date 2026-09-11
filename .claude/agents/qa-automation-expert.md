@@ -397,6 +397,7 @@ Key e-commerce concepts used in tests:
 - Return type annotations on all functions: `def method(self) -> Cart | None:`
 - Use `Literal` types for constrained values
 - Use `SecretStr` for sensitive configuration values
+- **Comments: brief, only when necessary.** Don't narrate the change or restate what the code already says; add a comment only for genuinely non-obvious *why*. No "# added for VCST-XXXX", no step-by-step play-by-play, no re-commenting untouched code. Match the density of the surrounding file.
 
 ## Best Practices
 

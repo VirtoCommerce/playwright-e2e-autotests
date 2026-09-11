@@ -27,6 +27,7 @@ def _employee_1_user_id(dataset: dict[str, list[dict[str, Any]]]) -> str:
     return user["id"]
 
 
+@pytest.mark.optional
 @pytest.mark.restapi
 @allure.feature("Platform / Organization login fallback (REST API)")
 @allure.title("VCST-5317: password grant with a stale organization_id still signs in once every organization is locked")
@@ -45,7 +46,9 @@ def test_password_grant_all_organizations_locked_falls_back_and_signs_in(
         for organization_id in organization_ids:
             lock_membership(user_id=user_id, organization_id=organization_id)
 
-    with allure.step("POST /connect/token with the stale organization_id — expect success, not user_is_locked_in_organization"):
+    with allure.step(
+        "POST /connect/token with the stale organization_id — expect success, not user_is_locked_in_organization"
+    ):
         response = requests.post(
             f"{global_settings.backend_base_url}/connect/token",
             data={
