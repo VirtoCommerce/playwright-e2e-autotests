@@ -323,7 +323,7 @@
         },
         {
           "Id": "VirtoCommerce.Customer",
-          "Version": "3.1014.0"
+          "Version": "3.1024.0"
         },
         {
           "Id": "VirtoCommerce.UCP",
@@ -339,7 +339,7 @@
         },
         {
           "Id": "VirtoCommerce.ProfileExperienceApiModule",
-          "Version": "3.1011.0"
+          "Version": "3.1018.0"
         },
         {
           "Id": "VirtoCommerce.Cart",
